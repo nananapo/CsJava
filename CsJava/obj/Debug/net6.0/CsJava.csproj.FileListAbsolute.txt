@@ -1,0 +1,15 @@
+C:\Users\kanap\Documents\Rider\CsJava\CsJava\bin\Debug\net6.0\CsJava.exe
+C:\Users\kanap\Documents\Rider\CsJava\CsJava\bin\Debug\net6.0\CsJava.deps.json
+C:\Users\kanap\Documents\Rider\CsJava\CsJava\bin\Debug\net6.0\CsJava.runtimeconfig.json
+C:\Users\kanap\Documents\Rider\CsJava\CsJava\bin\Debug\net6.0\CsJava.dll
+C:\Users\kanap\Documents\Rider\CsJava\CsJava\bin\Debug\net6.0\ref\CsJava.dll
+C:\Users\kanap\Documents\Rider\CsJava\CsJava\bin\Debug\net6.0\CsJava.pdb
+C:\Users\kanap\Documents\Rider\CsJava\CsJava\obj\Debug\net6.0\CsJava.csproj.AssemblyReference.cache
+C:\Users\kanap\Documents\Rider\CsJava\CsJava\obj\Debug\net6.0\CsJava.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\kanap\Documents\Rider\CsJava\CsJava\obj\Debug\net6.0\CsJava.AssemblyInfoInputs.cache
+C:\Users\kanap\Documents\Rider\CsJava\CsJava\obj\Debug\net6.0\CsJava.AssemblyInfo.cs
+C:\Users\kanap\Documents\Rider\CsJava\CsJava\obj\Debug\net6.0\CsJava.csproj.CoreCompileInputs.cache
+C:\Users\kanap\Documents\Rider\CsJava\CsJava\obj\Debug\net6.0\CsJava.dll
+C:\Users\kanap\Documents\Rider\CsJava\CsJava\obj\Debug\net6.0\ref\CsJava.dll
+C:\Users\kanap\Documents\Rider\CsJava\CsJava\obj\Debug\net6.0\CsJava.pdb
+C:\Users\kanap\Documents\Rider\CsJava\CsJava\obj\Debug\net6.0\CsJava.genruntimeconfig.cache
