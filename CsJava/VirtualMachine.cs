@@ -58,6 +58,7 @@ public class VirtualMachine
                     Console.WriteLine("ldc #" + index);
 
                     stack.Add(classFile.ConstantPoolInfos[index - 1]);
+                    Console.WriteLine("push : " + classFile.ConstantPoolInfos[index - 1]);
                     break;
                 }
                 case "b1":
