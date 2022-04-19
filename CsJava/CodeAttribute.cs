@@ -1,16 +1,17 @@
 ﻿namespace CsJava;
 
-public class CodeAttributeInfo : AttributeInfo
+public class CodeAttribute : AttributeInfo
 {
     public readonly ushort max_stack;
     public readonly ushort max_locals;
-    public readonly ushort code_length;
+    public readonly uint code_length;
     public readonly byte[] code;
     public readonly ushort exception_table_length;
+    //TODO exceptions
     public readonly ushort attributes_count;
     public readonly List<AttributeInfo> attributes;
 
-    public CodeAttributeInfo(uint attributeLength, ushort maxStack, ushort maxLocals, ushort codeLength, 
+    public CodeAttribute(uint attributeLength, ushort maxStack, ushort maxLocals, uint codeLength, 
         byte[] code, ushort exceptionTableLength, ushort attributesCount, List<AttributeInfo> attributes) 
         : base(attributeLength)
     {
