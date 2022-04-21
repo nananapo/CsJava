@@ -1,5 +1,8 @@
 class Main {
 	public static void main(String[] args) {
-		System.out.println("Hello World!");
+		int a = 20;
+		int b = 5;
+		int c = a / b + 3 + 100;
+		System.out.println(c);
 	}
 }

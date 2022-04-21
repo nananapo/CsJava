@@ -8,6 +8,14 @@ public static class FileUtil
     {
         return Base16[n / 16].ToString() + Base16[n % 16];
     }
+
+    public static int ToSignedByte(this byte n)
+    {
+        if (n < 128)
+            return (int) n;
+        n -= 128;
+        return n - 128;
+    }
     
     public static string ReadBase16(this byte[] bytes, int offset, int read, bool isBigEndian = true)
     {
@@ -25,7 +33,7 @@ public static class FileUtil
     public static ushort ReadUShort(this byte[] bytes, int offset)
     {
         ushort a = bytes[offset];
-        a *= 255;
+        a *= 256;
         ushort b = bytes[offset + 1];
         a += b;
         return a;
@@ -42,5 +50,24 @@ public static class FileUtil
         uint c = bytes[offset + 2] * pow2;
         uint d = bytes[offset + 3];
         return a + b + c + d;
+    }
+
+    public static short ReadShort(this byte[] bytes, int offset)
+    {
+        var a = bytes.ReadUShort(offset);
+        
+        // short : -32768 ~ 32767
+        if (a < 32768)
+            return (short)a;
+
+        a -= 32768;
+        int b = ((short)a) - 32768;
+        
+        return (short)b;
+    }
+
+    public static int ReadInt(this byte[] bytes, int offset)
+    {
+        return bytes[offset + 3] + (bytes[offset + 2] << 8) + (bytes[offset + 1] << 16) + (bytes[offset] << 24);
     }
 }

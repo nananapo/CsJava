@@ -27,6 +27,8 @@ public class VirtualMachine
     {
         var codeAttr = methodInfo.GetAttribute<CodeAttribute>();
 
+        var istore = new int[4];
+
         if (codeAttr == null)
         {
             Console.WriteLine("CodeAttributeが見つかりません。");
@@ -42,10 +44,60 @@ public class VirtualMachine
                 return;
             }
             
-            var opcode = codeAttr.code[offset++].ToBase16();
+            var opcode = codeAttr.code[offset++];
             switch (opcode)
             {
-                case "12":
+                case 0x02:
+                case 0x03:
+                case 0x04:
+                case 0x05:
+                case 0x06:
+                case 0x07:
+                case 0x08:
+                {
+                    Console.WriteLine("iconst_" + (opcode - 3));
+
+                    var data = new ConstantIntegerInfo(opcode - 3);
+                    stack.Add(data);
+                    Console.WriteLine("push : " + data);
+                    break;
+                }
+                case 0x10:
+                {
+                    if (codeAttr.code.Length < offset + 1)
+                    {
+                        Console.WriteLine("intを読めない");
+                        return;
+                    }
+
+                    var i = codeAttr.code[offset++].ToSignedByte();
+                    Console.WriteLine("bipush " + i);
+
+                    var data = new ConstantIntegerInfo(i);
+                    stack.Add(data);
+                    
+                    Console.WriteLine("push : " + data);
+                    break;
+                }
+                case 0x11:
+                {
+                    if (codeAttr.code.Length < offset + 2)
+                    {
+                        Console.WriteLine("byte1, byte2を読めない");
+                        return;
+                    }
+
+                    var sho = codeAttr.code.ReadShort(offset);
+                    offset += 2;
+                    
+                    Console.WriteLine("sipush  " + sho);
+
+                    var data = new ConstantIntegerInfo(sho);
+                    stack.Add(data);
+                    Console.WriteLine("push : " + data);
+                    break;
+                }
+                case 0x12:
                 {
                     if (codeAttr.code.Length < offset + 1)
                     {
@@ -61,12 +113,89 @@ public class VirtualMachine
                     Console.WriteLine("push : " + classFile.ConstantPoolInfos[index - 1]);
                     break;
                 }
-                case "b1":
+                case 0x1a:
+                case 0x1b:
+                case 0x1c:
+                case 0x1d:
+                {
+                    int n = opcode - 0x1a;
+
+                    int i = istore[n];
+                    Console.WriteLine($"iload_{n} " + i);
+                    
+                    var data = new ConstantIntegerInfo(i);
+                    stack.Add(data);
+                    Console.WriteLine("push : " + data);
+                    break;
+                }
+                case 0x3b:
+                case 0x3c:
+                case 0x3d:
+                case 0x3e:
+                {
+                    int n = opcode - 0x3b;
+
+                    int i = (stack[stack.Count - 1] as ConstantIntegerInfo).bytes;
+                    stack.RemoveAt(stack.Count - 1);
+
+                    Console.WriteLine($"istore_{n} " + i);
+                    istore[n] = i;
+                    break;
+                }
+                case 0x60:
+                {
+                    int value1 = (stack[stack.Count - 1] as ConstantIntegerInfo).bytes;
+                    stack.RemoveAt(stack.Count - 1);
+                    
+                    int value2 = (stack[stack.Count - 1] as ConstantIntegerInfo).bytes;
+                    stack.RemoveAt(stack.Count - 1);
+
+                    Console.WriteLine("iadd");
+                    stack.Add(new ConstantIntegerInfo(value1 + value2));
+                    break;
+                }
+                case 0x64:
+                {
+                    int value1 = (stack[stack.Count - 1] as ConstantIntegerInfo).bytes;
+                    stack.RemoveAt(stack.Count - 1);
+                    
+                    int value2 = (stack[stack.Count - 1] as ConstantIntegerInfo).bytes;
+                    stack.RemoveAt(stack.Count - 1);
+
+                    Console.WriteLine("isub");
+                    stack.Add(new ConstantIntegerInfo(value2 - value1));
+                    break;
+                }
+                case 0x68:
+                {
+                    int value1 = (stack[stack.Count - 1] as ConstantIntegerInfo).bytes;
+                    stack.RemoveAt(stack.Count - 1);
+                    
+                    int value2 = (stack[stack.Count - 1] as ConstantIntegerInfo).bytes;
+                    stack.RemoveAt(stack.Count - 1);
+
+                    Console.WriteLine("imul");
+                    stack.Add(new ConstantIntegerInfo(value2 * value1));
+                    break;
+                }
+                case 0x6c:
+                {
+                    int value1 = (stack[stack.Count - 1] as ConstantIntegerInfo).bytes;
+                    stack.RemoveAt(stack.Count - 1);
+                    
+                    int value2 = (stack[stack.Count - 1] as ConstantIntegerInfo).bytes;
+                    stack.RemoveAt(stack.Count - 1);
+
+                    Console.WriteLine("imul");
+                    stack.Add(new ConstantIntegerInfo(value2 / value1));
+                    break;
+                }
+                case 0xb1:
                 {
                     Console.WriteLine("return");
                     return;
                 }
-                case "b2":
+                case 0xb2:
                 {
                     if (codeAttr.code.Length < offset + 2)
                     {
@@ -83,7 +212,7 @@ public class VirtualMachine
                     Console.WriteLine("push : " + classFile.ConstantPoolInfos[index - 1]);
                     break;
                 }
-                case "b6":
+                case 0xb6:
                 {
                     if (codeAttr.code.Length < offset + 2)
                     {
@@ -115,7 +244,10 @@ public class VirtualMachine
 */
 
                     var argument_count = descriptor.str.Split(";").Count() - 1;
-                    Console.WriteLine("ArgumentCount: " + argument_count);
+
+                    if (argument_count == 0)
+                        argument_count++;
+                    Console.WriteLine("ArgumentCount: " + argument_count + " : " + descriptor.str);
 
                     var arguments = new List<ConstantPoolInfo>();
 
@@ -144,7 +276,14 @@ public class VirtualMachine
 
                     if (fieldClassName + "." + fieldName + "." +methodName.str == "java/lang/System.out.println")
                     {
-                        Console.WriteLine((classFile.ConstantPoolInfos[(arguments[0] as ConstantStringInfo).string_index - 1] as ConstantUtf8Info).str);
+                        if (arguments[0] is ConstantStringInfo strinfo)
+                        {
+                            Console.WriteLine((classFile.ConstantPoolInfos[strinfo.string_index - 1] as ConstantUtf8Info).str);
+                        }
+                        else if (arguments[0] is ConstantIntegerInfo intInfo)
+                        {                           
+                            Console.WriteLine(intInfo.bytes);
+                        }
                     }
 
                     break;
